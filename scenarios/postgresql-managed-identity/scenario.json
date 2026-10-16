@@ -1,0 +1,49 @@
+{
+  "name": "Petclinic with PostgreSQL managed identity",
+  "application": {
+    "path": "app",
+    "origin": "app/ORIGIN.md"
+  },
+  "init": {
+    "arguments": [
+      "--yes",
+      "--no-prompt",
+      "--profiles",
+      "postgres",
+      "--database-auth",
+      "managedIdentity"
+    ],
+    "environment": {},
+    "expectedExitCode": 0
+  },
+  "expected": {
+    "path": "expected",
+    "generatedPaths": [
+      ".azd-spring",
+      "infra",
+      "azure.yaml"
+    ]
+  },
+  "live": {
+    "costTier": "azure",
+    "bootstrapSql": "fixtures/bootstrap.sql",
+    "requiredEnvironment": [
+      "SPRING_DATABASE_ADMIN_OID",
+      "SPRING_DATABASE_ADMIN_NAME",
+      "SPRING_DATABASE_BOOTSTRAP_IP"
+    ],
+    "assertions": [
+      "application source remains unchanged",
+      "PostgreSQL password authentication is disabled",
+      "Container App uses its system-assigned identity for JDBC",
+      "runtime has no database password or secret",
+      "seeded data can be read",
+      "application data can be inserted, updated, and read",
+      "runtime role has only reviewed grants",
+      "DDL, DELETE, and reference-data writes are denied",
+      "data and fresh managed-identity sessions survive restart",
+      "all disposable Azure resources are deleted"
+    ]
+  }
+}
+

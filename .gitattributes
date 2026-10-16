@@ -1,0 +1,9 @@
+* text=auto
+
+*.cmd text eol=crlf
+*.ps1 text eol=lf
+*.sh text eol=lf
+*.yml text eol=lf
+mvnw text eol=lf
+scenarios/*/expected/** text eol=lf
+

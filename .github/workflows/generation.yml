@@ -1,0 +1,60 @@
+name: Generation regression
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      azure_dev_repository:
+        description: Repository containing the extension revision to test
+        required: false
+        default: weidongxu-microsoft/azure-dev
+      azure_dev_ref:
+        description: Branch, tag, or commit containing the extension revision
+        required: false
+        default: cbb01a46227d7311b48687f2702f0ecdca213de7
+
+permissions:
+  contents: read
+
+jobs:
+  generation:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out scenarios
+        uses: actions/checkout@v4
+
+      - name: Check out azure-dev
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ inputs.azure_dev_repository || 'weidongxu-microsoft/azure-dev' }}
+          ref: ${{ inputs.azure_dev_ref || 'cbb01a46227d7311b48687f2702f0ecdca213de7' }}
+          path: azure-dev
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: azure-dev/cli/azd/go.mod
+          cache-dependency-path: azure-dev/cli/azd/extensions/azure.springboot/go.sum
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: maven
+          cache-dependency-path: scenarios/postgresql-managed-identity/app/pom.xml
+
+      - name: Set up azd
+        uses: Azure/setup-azd@v2
+
+      - name: Install extension developer kit
+        run: azd extension install microsoft.azd.extensions --force
+
+      - name: Build and register Spring extension
+        run: azd x build --cwd azure-dev/cli/azd/extensions/azure.springboot
+
+      - name: Verify generated output
+        shell: pwsh
+        run: ./scripts/Invoke-Scenario.ps1 -Scenario scenarios/postgresql-managed-identity/scenario.json

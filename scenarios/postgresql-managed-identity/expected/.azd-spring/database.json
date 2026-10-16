@@ -1,0 +1,6 @@
+{
+  "auth": "managedIdentity",
+  "database": "petclinic",
+  "engine": "postgresql",
+  "role": "azd_app"
+}
