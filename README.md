@@ -29,6 +29,12 @@ pwsh ./scripts/Invoke-Scenario.ps1 `
   -Scenario scenarios/postgresql-managed-identity/scenario.json
 ```
 
+Run every scenario with:
+
+```powershell
+pwsh ./scripts/Invoke-AllScenarios.ps1
+```
+
 To deliberately accept reviewed output changes:
 
 ```powershell

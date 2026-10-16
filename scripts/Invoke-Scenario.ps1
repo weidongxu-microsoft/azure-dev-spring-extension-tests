@@ -8,7 +8,13 @@ param(
 
 $ErrorActionPreference = "Stop"
 $repoRoot = Split-Path -Parent $PSScriptRoot
-$scenarioFile = (Resolve-Path (Join-Path $repoRoot $Scenario)).Path
+$scenarioPath = if ([IO.Path]::IsPathRooted($Scenario)) {
+    $Scenario
+}
+else {
+    Join-Path $repoRoot $Scenario
+}
+$scenarioFile = (Resolve-Path $scenarioPath).Path
 $scenarioRoot = Split-Path -Parent $scenarioFile
 $definition = Get-Content $scenarioFile -Raw | ConvertFrom-Json
 $applicationSource = (Resolve-Path (Join-Path $scenarioRoot $definition.application.path)).Path
@@ -104,7 +110,8 @@ try {
         return
     }
 
-    & git diff --no-index --exit-code --src-prefix=expected/ --dst-prefix=actual/ -- $expectedRoot $actualRoot
+    & git -c core.autocrlf=false -c core.safecrlf=false diff --no-index --exit-code `
+        --src-prefix=expected/ --dst-prefix=actual/ -- $expectedRoot $actualRoot
     if ($LASTEXITCODE -ne 0) {
         throw "Generated output differs from the reviewed fixture. Inspect the diff or use -UpdateExpected."
     }

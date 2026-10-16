@@ -1,0 +1,39 @@
+{
+  "name": "Petclinic with MySQL password authentication",
+  "application": {
+    "path": "app",
+    "origin": "app/ORIGIN.md"
+  },
+  "init": {
+    "arguments": [
+      "--yes",
+      "--no-prompt",
+      "--profiles",
+      "mysql"
+    ],
+    "environment": {},
+    "expectedExitCode": 0
+  },
+  "expected": {
+    "path": "expected",
+    "generatedPaths": [
+      ".azd-spring",
+      "infra",
+      "azure.yaml"
+    ]
+  },
+  "live": {
+    "costTier": "azure",
+    "assertions": [
+      "application source remains unchanged",
+      "MySQL password is generated once into local azd environment state",
+      "Container App receives the password only through a secret reference",
+      "generated files, terminal output, and logs do not disclose the password",
+      "seeded data can be read",
+      "application data can be inserted, updated, and read",
+      "data survives application restart",
+      "all disposable Azure resources are deleted"
+    ]
+  }
+}
+

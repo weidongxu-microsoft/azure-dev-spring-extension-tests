@@ -13,7 +13,7 @@ on:
       azure_dev_ref:
         description: Branch, tag, or commit containing the extension revision
         required: false
-        default: cbb01a46227d7311b48687f2702f0ecdca213de7
+        default: 88628659540297534be2c08a0bd6bd7ee75adceb
 
 permissions:
   contents: read
@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ inputs.azure_dev_repository || 'weidongxu-microsoft/azure-dev' }}
-          ref: ${{ inputs.azure_dev_ref || 'cbb01a46227d7311b48687f2702f0ecdca213de7' }}
+          ref: ${{ inputs.azure_dev_ref || '88628659540297534be2c08a0bd6bd7ee75adceb' }}
           path: azure-dev
 
       - name: Set up Go
@@ -52,9 +52,22 @@ jobs:
       - name: Install extension developer kit
         run: azd extension install microsoft.azd.extensions --force
 
-      - name: Build and register Spring extension
+      - name: Build Spring extension
         run: azd x build --cwd azure-dev/cli/azd/extensions/azure.springboot
+
+      - name: Package Spring extension
+        run: >-
+          azd x pack
+          --cwd azure-dev/cli/azd/extensions/azure.springboot
+          --bundle
+          --output azure-dev/cli/azd/extensions/azure.springboot/bin/bundle
+
+      - name: Install Spring extension
+        run: >-
+          azd extension install
+          azure-dev/cli/azd/extensions/azure.springboot/bin/bundle/azure-springboot_0.0.1.zip
+          --force
 
       - name: Verify generated output
         shell: pwsh
-        run: ./scripts/Invoke-Scenario.ps1 -Scenario scenarios/postgresql-managed-identity/scenario.json
+        run: ./scripts/Invoke-AllScenarios.ps1

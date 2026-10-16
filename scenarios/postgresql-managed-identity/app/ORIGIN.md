@@ -6,6 +6,7 @@
 
 The fixture adds runtime dependency
 `com.azure:azure-identity-extensions:1.2.10`, which is required by the
-PostgreSQL JDBC managed-identity scenario. Deployment files are intentionally
-absent from the application input.
-
+PostgreSQL JDBC managed-identity scenario. It also adds the
+`postgres-managed-identity` Spring profile containing the JDBC authentication
+plugin configuration. Deployment files are intentionally absent from the
+application input.

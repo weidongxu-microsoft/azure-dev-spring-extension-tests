@@ -9,9 +9,7 @@
       "--yes",
       "--no-prompt",
       "--profiles",
-      "postgres",
-      "--database-auth",
-      "managedIdentity"
+      "postgres-managed-identity"
     ],
     "environment": {},
     "expectedExitCode": 0
@@ -46,4 +44,3 @@
     ]
   }
 }
-
