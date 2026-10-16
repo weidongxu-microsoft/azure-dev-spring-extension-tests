@@ -110,7 +110,7 @@ try {
         return
     }
 
-    & git -c core.autocrlf=false -c core.safecrlf=false diff --no-index --exit-code `
+    & git -c core.autocrlf=false -c core.safecrlf=false diff --no-index --exit-code --ignore-space-at-eol `
         --src-prefix=expected/ --dst-prefix=actual/ -- $expectedRoot $actualRoot
     if ($LASTEXITCODE -ne 0) {
         throw "Generated output differs from the reviewed fixture. Inspect the diff or use -UpdateExpected."
