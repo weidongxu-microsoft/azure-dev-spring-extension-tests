@@ -60,7 +60,7 @@ jobs:
           azd x pack
           --cwd azure-dev/cli/azd/extensions/azure.springboot
           --bundle
-          --output azure-dev/cli/azd/extensions/azure.springboot/bin/bundle
+          --output ./bin/bundle
 
       - name: Install Spring extension
         run: >-
