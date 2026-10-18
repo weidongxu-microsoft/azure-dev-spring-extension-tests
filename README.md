@@ -45,3 +45,8 @@ pwsh ./scripts/Invoke-Scenario.ps1 `
 
 Generation tests require no Azure credentials. Live scenarios are separate,
 cost-gated, and must verify cleanup.
+
+`external-scenarios/` records reproducible evaluations of public applications
+without vendoring their source. Each record pins the upstream repository and
+commit, documents required interaction or adaptation, and preserves validation
+and cleanup evidence.

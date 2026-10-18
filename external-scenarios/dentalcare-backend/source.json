@@ -1,0 +1,7 @@
+{
+  "repository": "https://github.com/anthonygrr/dentalcare-backend.git",
+  "commit": "0bd88ccc4a19ed532101f545475dfae0dbecaa74",
+  "license": null,
+  "sourceVendored": false,
+  "reason": "The upstream repository has no detected license. This scenario references the source without copying it."
+}
