@@ -11,14 +11,32 @@
     "databaseName": {
       "value": "petclinic"
     },
+    "driver": {
+      "value": ""
+    },
+    "embeddedDriver": {
+      "value": ""
+    },
+    "embeddedUrl": {
+      "value": ""
+    },
+    "embeddedUrlConfigured": {
+      "value": false
+    },
     "engine": {
       "value": "mysql"
+    },
+    "environmentBindings": {
+      "value": false
     },
     "environmentId": {
       "value": "${SPRING_CONTAINER_APP_ENVIRONMENT_ID}"
     },
     "host": {
       "value": "${SPRING_DATABASE_HOST=}"
+    },
+    "jdbcOptions": {
+      "value": "requireSSL=true\u0026sslMode=REQUIRED\u0026useSSL=true\u0026verifyServerCertificate=false"
     },
     "location": {
       "value": "${AZURE_LOCATION}"

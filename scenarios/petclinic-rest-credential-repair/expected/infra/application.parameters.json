@@ -1,0 +1,66 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appImage": {
+      "value": "${SERVICE_SPRING_PETCLINIC_REST_APP_IMAGE_NAME=mcr.microsoft.com/azuredocs/containerapps-helloworld:latest}"
+    },
+    "authentication": {
+      "value": "password"
+    },
+    "databaseName": {
+      "value": "petclinic"
+    },
+    "driver": {
+      "value": ""
+    },
+    "embeddedDriver": {
+      "value": ""
+    },
+    "embeddedUrl": {
+      "value": ""
+    },
+    "embeddedUrlConfigured": {
+      "value": false
+    },
+    "engine": {
+      "value": "postgresql"
+    },
+    "environmentBindings": {
+      "value": false
+    },
+    "environmentId": {
+      "value": "${SPRING_CONTAINER_APP_ENVIRONMENT_ID}"
+    },
+    "host": {
+      "value": "${SPRING_DATABASE_HOST=}"
+    },
+    "jdbcOptions": {
+      "value": "sslmode=require"
+    },
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "password": {
+      "value": "${SPRING_DATABASE_PASSWORD=}"
+    },
+    "port": {
+      "value": 9966
+    },
+    "profiles": {
+      "value": [
+        "postgres",
+        "spring-data-jpa"
+      ]
+    },
+    "registryEndpoint": {
+      "value": "${AZURE_CONTAINER_REGISTRY_ENDPOINT}"
+    },
+    "serviceName": {
+      "value": "spring-petclinic-rest-app"
+    },
+    "username": {
+      "value": "azdadmin"
+    }
+  }
+}

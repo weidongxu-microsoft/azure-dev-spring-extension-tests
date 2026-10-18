@@ -1,0 +1,30 @@
+{
+  "name": "Petclinic REST credential repair",
+  "application": {
+    "repository": "https://github.com/spring-petclinic/spring-petclinic-rest.git",
+    "commit": "afc8fc1d3b8ec8de69414482b3bd70a1da78cb95",
+    "license": "Apache-2.0"
+  },
+  "init": {
+    "arguments": [
+      "--yes",
+      "--profiles",
+      "postgres,spring-data-jpa"
+    ],
+    "environment": {},
+    "interaction": "interaction.json",
+    "expectedExitCode": 0
+  },
+  "expected": {
+    "path": "expected",
+    "generatedPaths": [
+      ".azd-spring",
+      "infra",
+      "azure.yaml"
+    ],
+    "reviewedPaths": [
+      "src/main/resources/application-mysql.properties",
+      "src/main/resources/application-postgres.properties"
+    ]
+  }
+}

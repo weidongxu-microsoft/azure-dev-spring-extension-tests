@@ -13,7 +13,7 @@ on:
       azure_dev_ref:
         description: Branch, tag, or commit containing the extension revision
         required: false
-        default: deb6e745faef42dc2ffb4905affe2d6f1ae4c3a3
+        default: b08c6fa327114106bf0f25fa7824fa46149fec95
 
 permissions:
   contents: read
@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ inputs.azure_dev_repository || 'weidongxu-microsoft/azure-dev' }}
-          ref: ${{ inputs.azure_dev_ref || 'deb6e745faef42dc2ffb4905affe2d6f1ae4c3a3' }}
+          ref: ${{ inputs.azure_dev_ref || 'b08c6fa327114106bf0f25fa7824fa46149fec95' }}
           path: azure-dev
 
       - name: Set up Go
@@ -45,6 +45,11 @@ jobs:
           java-version: "17"
           cache: maven
           cache-dependency-path: scenarios/postgresql-managed-identity/app/pom.xml
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
 
       - name: Set up azd
         uses: Azure/setup-azd@v2

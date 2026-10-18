@@ -11,14 +11,32 @@
     "databaseName": {
       "value": "petclinic"
     },
+    "driver": {
+      "value": ""
+    },
+    "embeddedDriver": {
+      "value": ""
+    },
+    "embeddedUrl": {
+      "value": ""
+    },
+    "embeddedUrlConfigured": {
+      "value": false
+    },
     "engine": {
       "value": "postgresql"
+    },
+    "environmentBindings": {
+      "value": false
     },
     "environmentId": {
       "value": "${SPRING_CONTAINER_APP_ENVIRONMENT_ID}"
     },
     "host": {
       "value": "${SPRING_DATABASE_HOST=}"
+    },
+    "jdbcOptions": {
+      "value": "authenticationPluginClassName=com.azure.identity.extensions.jdbc.postgresql.AzurePostgresqlAuthenticationPlugin\u0026azure.managedIdentityEnabled=true\u0026sslmode=verify-full\u0026sslrootcert=%2Fetc%2Fssl%2Fcerts%2Fca-certificates.crt"
     },
     "location": {
       "value": "${AZURE_LOCATION}"

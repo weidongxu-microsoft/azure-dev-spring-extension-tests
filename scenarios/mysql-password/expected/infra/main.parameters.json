@@ -26,8 +26,26 @@
     "databasePassword": {
       "value": "${SPRING_DATABASE_PASSWORD=}"
     },
+    "driver": {
+      "value": ""
+    },
+    "embeddedDriver": {
+      "value": ""
+    },
+    "embeddedUrl": {
+      "value": ""
+    },
+    "embeddedUrlConfigured": {
+      "value": false
+    },
+    "environmentBindings": {
+      "value": false
+    },
     "environmentName": {
       "value": "${AZURE_ENV_NAME}"
+    },
+    "jdbcOptions": {
+      "value": "requireSSL=true\u0026sslMode=REQUIRED\u0026useSSL=true\u0026verifyServerCertificate=false"
     },
     "location": {
       "value": "${AZURE_LOCATION}"

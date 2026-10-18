@@ -26,8 +26,26 @@
     "databasePassword": {
       "value": "${SPRING_DATABASE_PASSWORD=}"
     },
+    "driver": {
+      "value": ""
+    },
+    "embeddedDriver": {
+      "value": ""
+    },
+    "embeddedUrl": {
+      "value": ""
+    },
+    "embeddedUrlConfigured": {
+      "value": false
+    },
+    "environmentBindings": {
+      "value": false
+    },
     "environmentName": {
       "value": "${AZURE_ENV_NAME}"
+    },
+    "jdbcOptions": {
+      "value": "authenticationPluginClassName=com.azure.identity.extensions.jdbc.postgresql.AzurePostgresqlAuthenticationPlugin\u0026azure.managedIdentityEnabled=true\u0026sslmode=verify-full\u0026sslrootcert=%2Fetc%2Fssl%2Fcerts%2Fca-certificates.crt"
     },
     "location": {
       "value": "${AZURE_LOCATION}"

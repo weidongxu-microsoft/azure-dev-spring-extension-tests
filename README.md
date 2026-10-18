@@ -17,8 +17,11 @@ change merges, update the default source to `Azure/azure-dev` and `main`.
 
 Scenario `init.environment` values are applied only to the `azd spring init`
 child process. This supports explicit ambient-environment regression cases
-without modifying the checked-in application. Interactive prompt transcripts
-will use a separate interaction fixture when those scenarios are added.
+without modifying the checked-in application. Interactive scenarios use a
+PTY-backed fixture so azd sees a terminal rather than redirected standard
+input. A scenario may also pin a public Git repository and exact commit instead
+of vendoring its source. Interactive scenarios use the Python standard library
+on POSIX; Windows runs require `pywinpty`.
 
 ## Run a generation scenario
 

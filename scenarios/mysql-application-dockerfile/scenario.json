@@ -1,0 +1,30 @@
+{
+  "name": "Petclinic with an application-owned Dockerfile",
+  "application": {
+    "path": "../mysql-password/app",
+    "overlay": "app-overlay",
+    "origin": "../mysql-password/app/ORIGIN.md"
+  },
+  "init": {
+    "arguments": [
+      "--yes",
+      "--no-prompt",
+      "--profiles",
+      "mysql"
+    ],
+    "environment": {},
+    "expectedExitCode": 0
+  },
+  "expected": {
+    "path": "expected",
+    "generatedPaths": [
+      ".azd-spring",
+      "infra",
+      "azure.yaml"
+    ],
+    "reviewedPaths": [
+      ".dockerignore",
+      "Dockerfile"
+    ]
+  }
+}
