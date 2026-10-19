@@ -9,7 +9,12 @@ without fallback credentials.
 repair is required. The scenario reviews the generated `azure.yaml`, Bicep,
 runtime assets, and unchanged datasource property files.
 
-Run from the repository root:
+For a manual developer walkthrough, including prerequisites and direct
+`azd spring init` commands, see
+[`../../HOW-TO-TEST-OFFLINE.md`](../../HOW-TO-TEST-OFFLINE.md).
+
+The automated snapshot check remains available for agents and regression
+testing:
 
 ```powershell
 azd extension install artifacts/azure-springboot_0.0.1.zip --force
