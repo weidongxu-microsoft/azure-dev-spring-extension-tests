@@ -159,6 +159,9 @@ environment. It does not create Azure resources or select a region. During
 then provisions the infrastructure, builds and pushes the application image,
 deploys the Container App, and prints its endpoint.
 
+The generated Bicep does not prompt for a resource-group name. It creates
+`rg-spring-petclinic-rest-demo`, derived from the environment name.
+
 ### 9. Verify the live API and database
 
 Read the deployed endpoint and confirm application health:
