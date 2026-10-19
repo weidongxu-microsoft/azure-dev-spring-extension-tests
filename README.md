@@ -53,3 +53,6 @@ cost-gated, and must verify cleanup.
 without vendoring their source. Each record pins the upstream repository and
 commit, documents required interaction or adaptation, and preserves validation
 and cleanup evidence.
+
+For a registry-independent extension bundle and a no-prompt Petclinic REST
+scenario, see [HOW-TO-TEST-OFFLINE.md](HOW-TO-TEST-OFFLINE.md).

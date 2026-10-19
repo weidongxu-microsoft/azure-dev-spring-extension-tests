@@ -1,0 +1,20 @@
+# Petclinic REST non-interactive PostgreSQL
+
+This scenario vendors Spring Petclinic REST at
+`afc8fc1d3b8ec8de69414482b3bd70a1da78cb95` under its Apache-2.0 license.
+The MySQL and PostgreSQL properties use runtime-only password placeholders
+without fallback credentials.
+
+`azd spring init` therefore runs with `--yes --no-prompt`; no PTY or source
+repair is required. The scenario reviews the generated `azure.yaml`, Bicep,
+runtime assets, and unchanged datasource property files.
+
+Run from the repository root:
+
+```powershell
+azd extension install artifacts/azure-springboot_0.0.1.zip --force
+pwsh ./scripts/Invoke-Scenario.ps1 `
+  -Scenario scenarios/petclinic-rest-noninteractive/scenario.json
+```
+
+This is generation-only validation and creates no Azure resources.

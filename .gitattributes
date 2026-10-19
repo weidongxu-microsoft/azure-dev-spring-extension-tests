@@ -6,4 +6,4 @@
 *.yml text eol=lf
 mvnw text eol=lf
 scenarios/*/expected/** text eol=lf
-
+artifacts/*.zip -text
