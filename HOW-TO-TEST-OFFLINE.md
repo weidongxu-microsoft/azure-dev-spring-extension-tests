@@ -2,7 +2,8 @@
 
 This branch contains a self-contained `azure.springboot` extension bundle and
 a non-interactive Petclinic REST generation scenario. It does not require an
-extension registry or Azure credentials.
+extension registry. Generation does not require Azure credentials; the live
+deployment section does.
 
 The scenario vendors the pinned Apache-2.0 application source. Maven still
 requires either network access or a populated local dependency cache.
@@ -19,9 +20,9 @@ provided through an internal share or removable media.
 - Maven 3.9 or later
 - PowerShell 7 for the commands below
 
-Docker and Azure credentials are not required for this generation-only demo.
-The application includes Maven Wrapper, but installing Maven makes the local
-Java toolchain explicit and easier to diagnose.
+Docker and Azure credentials are not required until the live deployment in
+step 8. The application includes Maven Wrapper, but installing Maven makes the
+local Java toolchain explicit and easier to diagnose.
 
 Verify the tools:
 
@@ -132,7 +133,70 @@ The generated `azure.yaml` should configure one Container Apps service and a
 preprovision password hook. The Bicep should configure PostgreSQL/password,
 not managed identity.
 
-### 8. Optionally compile and package locally
+### 8. Deploy to Azure
+
+The live test requires:
+
+- Docker running locally
+- Azure authentication
+- An Azure subscription
+- Permission to create a resource group, Container Apps resources, a container
+  registry, Log Analytics, and PostgreSQL
+
+Sign in, create an azd environment, and deploy:
+
+```powershell
+docker version
+azd auth login
+azd env new spring-petclinic-rest-demo
+azd up
+```
+
+Select the subscription and Azure location when prompted. `azd up` provisions
+the infrastructure, builds and pushes the application image, deploys the
+Container App, and prints its endpoint.
+
+### 9. Verify the live API and database
+
+Read the deployed endpoint and confirm application health:
+
+```powershell
+$endpoint = (azd env get-value SPRING_APPLICATION_ENDPOINT).TrimEnd("/")
+Invoke-RestMethod "$endpoint/petclinic/actuator/health"
+```
+
+Create an owner through the REST API:
+
+```powershell
+$owner = @{
+    firstName = "Extension"
+    lastName = "Demo"
+    address = "1 Azure Way"
+    city = "Redmond"
+    telephone = "4255550100"
+} | ConvertTo-Json
+
+$created = Invoke-RestMethod `
+    -Method Post `
+    -Uri "$endpoint/petclinic/api/owners" `
+    -ContentType "application/json" `
+    -Body $owner
+$created
+```
+
+Query the PostgreSQL-backed record:
+
+```powershell
+Invoke-RestMethod "$endpoint/petclinic/api/owners?lastName=Demo"
+```
+
+The response should include the newly created owner. This verifies the
+application endpoint, API write, and database query.
+
+### 10. Optionally run standalone local checks
+
+`azd up` already compiles Bicep and builds the application image. The commands
+below are useful only when diagnosing those stages separately.
 
 If Azure CLI with Bicep is installed:
 
@@ -148,12 +212,12 @@ mvn -Dmaven.test.skip=true package
 
 Alternatively, use `.\mvnw.cmd` on Windows or `./mvnw` on macOS and Linux.
 
-Running `azd up` is outside this demo. It additionally requires Docker, Azure
-authentication, a subscription, and permission to create resources.
+### 11. Clean up
 
-### 9. Clean up
+Delete the Azure resources before removing local state:
 
 ```powershell
+azd down
 Set-Location ..
 Remove-Item $demo -Recurse
 azd extension uninstall azure.springboot
