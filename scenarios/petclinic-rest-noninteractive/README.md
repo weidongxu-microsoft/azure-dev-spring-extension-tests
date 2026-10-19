@@ -17,7 +17,7 @@ The automated snapshot check remains available for agents and regression
 testing. Use a clean extension state or an empty temporary `AZD_CONFIG_DIR`:
 
 ```powershell
-azd extension install artifacts/azure-springboot_0.0.1.zip
+azd extension install artifacts/azure-springboot_1.0.0-beta.1.zip
 pwsh ./scripts/Invoke-Scenario.ps1 `
   -Scenario scenarios/petclinic-rest-noninteractive/scenario.json
 ```

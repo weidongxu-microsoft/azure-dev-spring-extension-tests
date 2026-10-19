@@ -70,7 +70,7 @@ jobs:
       - name: Install Spring extension
         run: >-
           azd extension install
-          azure-dev/cli/azd/extensions/azure.springboot/bin/bundle/azure-springboot_0.0.1.zip
+          azure-dev/cli/azd/extensions/azure.springboot/bin/bundle/azure-springboot_1.0.0-beta.1.zip
           --force
 
       - name: Verify generated output

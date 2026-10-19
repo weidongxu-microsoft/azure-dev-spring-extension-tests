@@ -60,8 +60,8 @@ Continue when `azure.springboot` has no installed version.
 ### 4. Verify and install the packed extension
 
 ```powershell
-$bundle = "artifacts/azure-springboot_0.0.1.zip"
-$expectedHash = "3172c5c7da5020025be27576c3c726754b856ab9c535e389a8c1e9fefc75bea4"
+$bundle = "artifacts/azure-springboot_1.0.0-beta.1.zip"
+$expectedHash = "b79af21c47f8d5779c17b37b4f9794c43b80b501ad1dbc1eea7f70376f300f1d"
 $actualHash = (Get-FileHash $bundle -Algorithm SHA256).Hash.ToLowerInvariant()
 if ($actualHash -ne $expectedHash) {
     throw "Extension bundle checksum mismatch"
@@ -71,7 +71,7 @@ azd extension list
 azd spring init --help
 ```
 
-The extension list should show `azure.springboot` version `0.0.1` as installed.
+The extension list should show `azure.springboot` version `1.0.0-beta.1` as installed.
 
 ### 5. Copy the application to a disposable directory
 
@@ -249,7 +249,7 @@ placeholders, so initialization needs no credential-repair prompt.
 
 ## Bundle provenance
 
-The bundle was built from `Azure/azure-dev` commit `e74893dde`:
+The bundle was built from `Azure/azure-dev` commit `7dea6bd24`:
 
 ```powershell
 Set-Location cli/azd/extensions/azure.springboot

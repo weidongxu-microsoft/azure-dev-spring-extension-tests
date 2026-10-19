@@ -1,7 +1,7 @@
 # Packed extension
 
-`azure-springboot_0.0.1.zip` is a self-contained development bundle built from
-`Azure/azure-dev` commit `e74893dde` with:
+`azure-springboot_1.0.0-beta.1.zip` is a self-contained development bundle built
+from `Azure/azure-dev` commit `7dea6bd24` with:
 
 ```powershell
 azd x pack --bundle --rebuild -o <this-directory>
