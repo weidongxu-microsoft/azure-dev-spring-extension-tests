@@ -152,9 +152,12 @@ azd env new spring-petclinic-rest-demo
 azd up
 ```
 
-Select the subscription and Azure location when prompted. `azd up` provisions
-the infrastructure, builds and pushes the application image, deploys the
-Container App, and prints its endpoint.
+`azd env new` creates the local environment named
+`spring-petclinic-rest-demo` and selects it as the project's active
+environment. It does not create Azure resources or select a region. During
+`azd up`, select the subscription and Azure location when prompted. `azd up`
+then provisions the infrastructure, builds and pushes the application image,
+deploys the Container App, and prints its endpoint.
 
 ### 9. Verify the live API and database
 
