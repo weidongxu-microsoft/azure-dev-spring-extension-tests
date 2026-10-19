@@ -6,6 +6,8 @@ extension registry or Azure credentials.
 
 The scenario vendors the pinned Apache-2.0 application source. Maven still
 requires either network access or a populated local dependency cache.
+Cloning the branch also requires network access unless the repository is
+provided through an internal share or removable media.
 
 ## Human
 
@@ -42,27 +44,33 @@ Set-Location azure-dev-spring-extension-tests
 ### 3. Confirm a clean extension state
 
 ```powershell
-azd extension uninstall azure.springboot --force
-azd extension list --output json
+azd extension list
 ```
 
-The uninstall command may report that the extension is not installed. In the
-list output, `azure.springboot` must not have an installed version.
+If `azure.springboot` has an installed version, remove it and check again:
+
+```powershell
+azd extension uninstall azure.springboot
+azd extension list
+```
+
+Continue when `azure.springboot` has no installed version.
 
 ### 4. Verify and install the packed extension
 
 ```powershell
 $bundle = "artifacts/azure-springboot_0.0.1.zip"
-(Get-FileHash $bundle -Algorithm SHA256).Hash.ToLowerInvariant()
-azd extension install $bundle --force
+$expectedHash = "2b41cd01e98694f7cc22eea3876b676ef61358656b865430980e2826b3801df9"
+$actualHash = (Get-FileHash $bundle -Algorithm SHA256).Hash.ToLowerInvariant()
+if ($actualHash -ne $expectedHash) {
+    throw "Extension bundle checksum mismatch"
+}
+azd extension install $bundle
+azd extension list
 azd spring init --help
 ```
 
-The expected SHA-256 is:
-
-```text
-2b41cd01e98694f7cc22eea3876b676ef61358656b865430980e2826b3801df9
-```
+The extension list should show `azure.springboot` version `0.0.1` as installed.
 
 ### 5. Copy the application to a disposable directory
 
@@ -94,9 +102,12 @@ property files.
 ### 6. Generate the azd project
 
 ```powershell
-azd spring init --yes --no-prompt `
-  --profiles postgres,spring-data-jpa
+azd spring init --profiles postgres,spring-data-jpa
 ```
+
+Answer `y` when asked to trust the Maven project and when asked to create the
+deployment files. There should be no credential-repair prompt because the
+checked-in datasource passwords are already runtime-only placeholders.
 
 The command executes the trusted Maven project for inspection, then generates:
 
@@ -105,7 +116,7 @@ The command executes the trusted Maven project for inspection, then generates:
 - `.azd-spring/`
 - `.azd-spring/prepare-database-password.ps1`
 
-It must not prompt for credentials or create Azure resources.
+It does not ask for credential values or create Azure resources.
 
 ### 7. Inspect the generated project
 
@@ -132,17 +143,20 @@ az bicep build --file ./infra/main.bicep --stdout > $null
 Package the Java application without deploying:
 
 ```powershell
-./mvnw.cmd -Dmaven.test.skip=true package
+mvn -Dmaven.test.skip=true package
 ```
 
-On macOS or Linux, use `./mvnw` instead.
+Alternatively, use `.\mvnw.cmd` on Windows or `./mvnw` on macOS and Linux.
+
+Running `azd up` is outside this demo. It additionally requires Docker, Azure
+authentication, a subscription, and permission to create resources.
 
 ### 9. Clean up
 
 ```powershell
 Set-Location ..
-Remove-Item $demo -Recurse -Force
-azd extension uninstall azure.springboot --force
+Remove-Item $demo -Recurse
+azd extension uninstall azure.springboot
 ```
 
 This branch validates the packed extension against this scenario only. Other
@@ -151,12 +165,14 @@ scenario snapshots remain associated with the test repository's default
 
 ## Agent
 
-1. Verify the bundle hash against `artifacts/SHA256SUMS`.
-2. Install the local ZIP with `azd extension install ... --force`.
-3. Run `scripts/Invoke-Scenario.ps1` with
+1. Set `AZD_CONFIG_DIR` to a new, empty temporary directory.
+2. Verify the bundle hash against `artifacts/SHA256SUMS`.
+3. Install the local ZIP with `azd extension install ...`.
+4. Run `scripts/Invoke-Scenario.ps1` with
    `scenarios/petclinic-rest-noninteractive/scenario.json`.
-4. Do not run `azd up` or require Azure credentials.
-5. Report whether the reviewed generated output matched.
+5. Do not run `azd up` or require Azure credentials.
+6. Remove the temporary azd configuration and report whether the reviewed
+   generated output matched.
 
 The checked-in application already uses runtime-only datasource password
 placeholders, so initialization needs no credential-repair prompt.
@@ -168,10 +184,4 @@ The bundle was built from `Azure/azure-dev` commit `f960e452c`:
 ```powershell
 Set-Location cli/azd/extensions/azure.springboot
 azd x pack --bundle --rebuild -o <test-repository>/artifacts
-```
-
-To remove the local installation:
-
-```powershell
-azd extension uninstall azure.springboot --force
 ```

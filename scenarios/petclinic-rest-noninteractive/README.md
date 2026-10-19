@@ -14,10 +14,10 @@ For a manual developer walkthrough, including prerequisites and direct
 [`../../HOW-TO-TEST-OFFLINE.md`](../../HOW-TO-TEST-OFFLINE.md).
 
 The automated snapshot check remains available for agents and regression
-testing:
+testing. Use a clean extension state or an empty temporary `AZD_CONFIG_DIR`:
 
 ```powershell
-azd extension install artifacts/azure-springboot_0.0.1.zip --force
+azd extension install artifacts/azure-springboot_0.0.1.zip
 pwsh ./scripts/Invoke-Scenario.ps1 `
   -Scenario scenarios/petclinic-rest-noninteractive/scenario.json
 ```
