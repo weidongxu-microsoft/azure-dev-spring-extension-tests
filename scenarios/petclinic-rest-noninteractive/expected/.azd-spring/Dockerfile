@@ -1,7 +1,9 @@
 FROM maven:3.9-eclipse-temurin-17 AS build
 WORKDIR /workspace
 COPY . .
-RUN chmod +x mvnw && ./mvnw -B -Dmaven.test.skip=true package
+RUN sed -i 's/\r$//' mvnw \
+    && chmod +x mvnw \
+    && MAVEN_CONFIG= ./mvnw -B -Dmaven.test.skip=true package
 
 FROM eclipse-temurin:17-jre
 WORKDIR /app

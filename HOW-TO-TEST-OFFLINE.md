@@ -61,7 +61,7 @@ Continue when `azure.springboot` has no installed version.
 
 ```powershell
 $bundle = "artifacts/azure-springboot_0.0.1.zip"
-$expectedHash = "2b41cd01e98694f7cc22eea3876b676ef61358656b865430980e2826b3801df9"
+$expectedHash = "3172c5c7da5020025be27576c3c726754b856ab9c535e389a8c1e9fefc75bea4"
 $actualHash = (Get-FileHash $bundle -Algorithm SHA256).Hash.ToLowerInvariant()
 if ($actualHash -ne $expectedHash) {
     throw "Extension bundle checksum mismatch"
@@ -249,7 +249,7 @@ placeholders, so initialization needs no credential-repair prompt.
 
 ## Bundle provenance
 
-The bundle was built from `Azure/azure-dev` commit `f960e452c`:
+The bundle was built from `Azure/azure-dev` commit `e74893dde`:
 
 ```powershell
 Set-Location cli/azd/extensions/azure.springboot
