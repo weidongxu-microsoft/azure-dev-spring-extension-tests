@@ -54,13 +54,13 @@
       "value": 1
     },
     "foundryModelName": {
-      "value": "gpt-5.4-nano"
+      "value": "gpt-5.6-sol"
     },
     "foundryModelSku": {
       "value": "GlobalStandard"
     },
     "foundryModelVersion": {
-      "value": "2026-03-17"
+      "value": "2026-07-09"
     },
     "jdbcOptions": {
       "value": "authenticationPluginClassName=com.azure.identity.extensions.jdbc.postgresql.AzurePostgresqlAuthenticationPlugin\u0026azure.managedIdentityEnabled=true\u0026sslmode=verify-full\u0026sslrootcert=%2Fetc%2Fssl%2Fcerts%2Fca-certificates.crt"

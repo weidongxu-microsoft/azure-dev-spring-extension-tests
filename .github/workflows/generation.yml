@@ -13,7 +13,7 @@ on:
       azure_dev_ref:
         description: Branch, tag, or commit containing the extension revision
         required: false
-        default: c3889b5e00fd6e9f0990bda82754cf0e9d2be41c
+        default: 418e3cdbcb41ada5439ab83f581728a173f66e46
 
 permissions:
   contents: read
@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ inputs.azure_dev_repository || 'weidongxu-microsoft/azure-dev' }}
-          ref: ${{ inputs.azure_dev_ref || 'c3889b5e00fd6e9f0990bda82754cf0e9d2be41c' }}
+          ref: ${{ inputs.azure_dev_ref || '418e3cdbcb41ada5439ab83f581728a173f66e46' }}
           path: azure-dev
 
       - name: Set up Go

@@ -28,8 +28,8 @@
     "costTier": "azure",
     "location": "eastus2",
     "model": {
-      "name": "gpt-5.4-nano",
-      "version": "2026-03-17",
+      "name": "gpt-5.6-sol",
+      "version": "2026-07-09",
       "sku": "GlobalStandard"
     },
     "assertions": [

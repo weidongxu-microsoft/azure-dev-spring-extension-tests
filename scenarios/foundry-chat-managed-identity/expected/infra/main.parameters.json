@@ -45,7 +45,7 @@
       "value": "managedIdentity"
     },
     "foundryDeploymentName": {
-      "value": "gpt-5.4-nano"
+      "value": "gpt-5.6-sol"
     },
     "foundryEnabled": {
       "value": true
@@ -54,13 +54,13 @@
       "value": 1
     },
     "foundryModelName": {
-      "value": "gpt-5.4-nano"
+      "value": "gpt-5.6-sol"
     },
     "foundryModelSku": {
       "value": "GlobalStandard"
     },
     "foundryModelVersion": {
-      "value": "2026-03-17"
+      "value": "2026-07-09"
     },
     "jdbcOptions": {
       "value": ""
