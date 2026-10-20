@@ -35,6 +35,9 @@
     "foundryAccountName": {
       "value": "${SPRING_FOUNDRY_ACCOUNT_NAME=}"
     },
+    "foundryAuthentication": {
+      "value": "apiKey"
+    },
     "foundryDeploymentName": {
       "value": ""
     },

@@ -1,0 +1,45 @@
+{
+  "name": "Spring AI Foundry chat with managed identity",
+  "application": {
+    "path": "../foundry-chat/app",
+    "overlay": "app-overlay",
+    "origin": "../foundry-chat/app/README.md"
+  },
+  "init": {
+    "arguments": [
+      "--yes",
+      "--no-prompt"
+    ],
+    "environment": {},
+    "expectedExitCode": 0
+  },
+  "expected": {
+    "path": "expected",
+    "generatedPaths": [
+      ".azd-spring",
+      "infra",
+      "azure.yaml"
+    ],
+    "reviewedPaths": [
+      "src/main/resources/application.properties"
+    ]
+  },
+  "live": {
+    "costTier": "azure",
+    "location": "eastus2",
+    "model": {
+      "name": "gpt-5.4-nano",
+      "version": "2026-03-17",
+      "sku": "GlobalStandard"
+    },
+    "assertions": [
+      "application source contains no Foundry API-key property",
+      "Foundry local authentication is disabled",
+      "Container App system identity has Cognitive Services OpenAI User on the Foundry account",
+      "Container App configuration contains no Foundry key secret or API-key environment variable",
+      "Foundry network access defaults to deny and allows only Container Apps outbound IPs",
+      "GET / returns HTTP 200 with a non-empty model response",
+      "all disposable Azure resources are deleted"
+    ]
+  }
+}
