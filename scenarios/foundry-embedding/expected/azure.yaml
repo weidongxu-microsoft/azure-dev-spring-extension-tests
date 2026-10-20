@@ -1,0 +1,15 @@
+infra:
+    module: main
+    path: infra
+    provider: bicep
+name: foundry-embedding
+services:
+    foundry-embedding-app:
+        docker:
+            context: .
+            path: .azd-spring/Dockerfile
+            platform: linux/amd64
+        host: containerapp
+        language: docker
+        module: application
+        project: .

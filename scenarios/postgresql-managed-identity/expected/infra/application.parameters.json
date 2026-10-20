@@ -38,8 +38,17 @@
     "foundryAuthentication": {
       "value": "apiKey"
     },
-    "foundryDeploymentName": {
+    "foundryChatDeploymentName": {
       "value": ""
+    },
+    "foundryChatEnabled": {
+      "value": false
+    },
+    "foundryEmbeddingDeploymentName": {
+      "value": ""
+    },
+    "foundryEmbeddingEnabled": {
+      "value": false
     },
     "foundryEnabled": {
       "value": false

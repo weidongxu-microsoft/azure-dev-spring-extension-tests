@@ -38,8 +38,17 @@
     "foundryAuthentication": {
       "value": "managedIdentity"
     },
-    "foundryDeploymentName": {
+    "foundryChatDeploymentName": {
       "value": "gpt-5.6-sol"
+    },
+    "foundryChatEnabled": {
+      "value": true
+    },
+    "foundryEmbeddingDeploymentName": {
+      "value": ""
+    },
+    "foundryEmbeddingEnabled": {
+      "value": false
     },
     "foundryEnabled": {
       "value": true

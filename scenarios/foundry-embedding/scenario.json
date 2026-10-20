@@ -1,0 +1,41 @@
+{
+  "name": "Spring AI Foundry embedding",
+  "application": {
+    "path": "app",
+    "origin": "app/README.md"
+  },
+  "init": {
+    "arguments": [
+      "--yes",
+      "--no-prompt"
+    ],
+    "environment": {},
+    "expectedExitCode": 0
+  },
+  "expected": {
+    "path": "expected",
+    "generatedPaths": [
+      ".azd-spring",
+      "infra",
+      "azure.yaml"
+    ]
+  },
+  "live": {
+    "costTier": "azure",
+    "location": "eastus2",
+    "model": {
+      "name": "text-embedding-3-small",
+      "version": "1",
+      "sku": "GlobalStandard"
+    },
+    "assertions": [
+      "application source remains unchanged",
+      "Foundry is an AIServices account with the expected embedding deployment",
+      "Container App receives the API key only through a secret reference",
+      "generated files and local azd state do not disclose the API key",
+      "Foundry network access defaults to deny and allows only Container Apps outbound IPs",
+      "GET / returns HTTP 200 with a positive embedding dimension",
+      "all disposable Azure resources are deleted"
+    ]
+  }
+}
