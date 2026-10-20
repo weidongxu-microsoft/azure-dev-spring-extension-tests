@@ -1,7 +1,7 @@
 hooks:
     preprovision:
         interactive: false
-        run: .azd-spring/database.ps1
+        run: .azd-spring/prepare-database-password.ps1
         shell: pwsh
 infra:
     module: main

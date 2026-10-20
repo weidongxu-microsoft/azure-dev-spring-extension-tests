@@ -30,5 +30,6 @@ confirmations, but never authorizes credential repair. Do not use `--no-prompt`.
 Manual initialization was verified on October 18, 2026 with extension commit
 `b08c6fa327114106bf0f25fa7824fa46149fec95`. Both repaired properties files and all
 generated outputs matched `expected/` (ignoring line endings); Bicep compiled.
-This records initialization only, not live deployment. The Ubuntu PTY CI run
-remains blocked because azd selected non-interactive mode.
+This records initialization only, not live deployment. The scenario explicitly
+sets `AZD_NON_INTERACTIVE=false` so the PTY-backed repair prompt remains enabled
+in agent and CI environments.

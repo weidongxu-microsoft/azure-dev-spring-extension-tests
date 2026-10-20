@@ -32,6 +32,15 @@
     "environmentId": {
       "value": "${SPRING_CONTAINER_APP_ENVIRONMENT_ID}"
     },
+    "foundryAccountName": {
+      "value": "${SPRING_FOUNDRY_ACCOUNT_NAME=}"
+    },
+    "foundryDeploymentName": {
+      "value": ""
+    },
+    "foundryEnabled": {
+      "value": false
+    },
     "host": {
       "value": "${SPRING_DATABASE_HOST=}"
     },

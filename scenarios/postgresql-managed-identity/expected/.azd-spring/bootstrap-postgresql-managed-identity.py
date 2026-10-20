@@ -1,12 +1,18 @@
 # Copyright (c) Microsoft Corporation. All rights reserved.
 # Licensed under the MIT License.
 
-"""Local prerequisites and SQL bootstrap for PostgreSQL managed identity."""
+"""Local prerequisites and SQL bootstrap for PostgreSQL managed identity.
+
+Azure documents token authentication and non-admin Entra role mapping here:
+https://learn.microsoft.com/azure/postgresql/security/security-entra-configure
+https://learn.microsoft.com/azure/postgresql/security/security-manage-entra-users
+The no-DDL/TEMP/ownership checks below are this extension's runtime policy,
+not additional requirements imposed by managed-identity authentication.
+"""
 
 import argparse
 import hashlib
 import importlib.util
-import ipaddress
 import json
 import os
 from pathlib import Path
@@ -61,9 +67,66 @@ def bootstrap_sql(env):
     return content
 
 
-def bootstrap_digest(host, database, database_oid, principal, script):
-    state = "\n".join((host, database, str(database_oid), principal, script))
+def bootstrap_digest(host, database, database_oid, role_oid, principal, script):
+    state = "\n".join((host, database, str(database_oid), str(role_oid), principal, script))
     return hashlib.sha256(state.encode()).hexdigest()
+
+
+def execute_bootstrap_sql(connection, script):
+    import psycopg
+    from psycopg import sql
+
+    # Execute through PostgreSQL's atomic SPI context, not the top-level SQL protocol.
+    # SPI rejects transaction commands (including nested procedure commits), so supplied SQL
+    # cannot commit grants before validation. PostgreSQL parses comments/strings/function bodies;
+    # no client-side SQL splitting or keyword matching is needed.
+    # https://www.postgresql.org/docs/15/spi-spi-execute.html
+    # Quote both the SQL string and the DO body; supplied dollar quotes cannot end our wrapper.
+    body = sql.SQL("BEGIN EXECUTE {}; END").format(sql.Literal(script)).as_string(connection)
+    try:
+        connection.execute(sql.SQL("DO {}").format(sql.Literal(body)))
+    except (psycopg.errors.FeatureNotSupported, psycopg.errors.InvalidTransactionTermination) as error:
+        if error.sqlstate == "2D000" or error.diag.message_primary == "EXECUTE of transaction commands is not implemented":
+            raise RuntimeError(
+                "Bootstrap SQL cannot control transactions; remove transaction commands such as "
+                "BEGIN, COMMIT, ROLLBACK, and SAVEPOINT, including inside called procedures"
+            ) from None
+        raise
+
+
+def validate_runtime_privileges(connection):
+    # MEMBER includes direct/transitive SET ROLE targets, even through NOINHERIT.
+    # USAGE or checking only the login role would miss privileges acquired by switching roles.
+    # https://www.postgresql.org/docs/15/role-membership.html
+    # https://www.postgresql.org/docs/15/functions-info.html#FUNCTIONS-INFO-ACCESS-TABLE
+    flags = connection.execute(
+        "SELECT bool_or(rolsuper), bool_or(rolcreatedb), bool_or(rolcreaterole) FROM pg_roles "
+        "WHERE rolname = %s OR pg_has_role(%s, oid, 'MEMBER')", (ROLE, ROLE),
+    ).fetchone()
+    if flags != (False, False, False):
+        raise RuntimeError("Runtime SQL role must not have administrative privileges")
+    # Ownership permits ALTER/DROP even after CREATE is revoked. Shared owner dependencies
+    # cover routines, types, schemas, and other objects without an incomplete catalog list.
+    # Scope them to this database and shared objects; retain pg_class for temporary relations.
+    # https://www.postgresql.org/docs/15/catalog-pg-shdepend.html
+    unsafe = connection.execute(
+        "WITH runtime_roles AS ("
+        "SELECT oid FROM pg_roles WHERE rolname = %s OR pg_has_role(%s, oid, 'MEMBER')) "
+        "SELECT bool_or(pg_has_role(oid, 'azure_pg_admin', 'MEMBER')), "
+        "bool_or(has_database_privilege(oid, current_database(), 'CREATE')), "
+        "bool_or(has_database_privilege(oid, current_database(), 'TEMP')), "
+        "bool_or(EXISTS (SELECT 1 FROM pg_namespace "
+        "WHERE has_schema_privilege(runtime_roles.oid, pg_namespace.oid, 'CREATE') "
+        "AND nspname !~ '^pg_(toast_)?temp_[0-9]+$')), "
+        "bool_or(EXISTS (SELECT 1 FROM pg_class WHERE relowner = runtime_roles.oid) "
+        "OR EXISTS (SELECT 1 FROM pg_shdepend WHERE refclassid = 'pg_authid'::regclass "
+        "AND refobjid = runtime_roles.oid AND deptype = 'o' "
+        "AND dbid IN (0, (SELECT oid FROM pg_database WHERE datname = current_database())))) "
+        "FROM runtime_roles",
+        (ROLE, ROLE),
+    ).fetchone()
+    if any(unsafe):
+        raise RuntimeError("Runtime SQL role must not have admin, DDL, TEMP, or object ownership")
 
 
 def prepare(settings, env):
@@ -71,9 +134,6 @@ def prepare(settings, env):
         raise RuntimeError("Unsupported database/authentication combination")
     uuid.UUID(required(env, "SPRING_DATABASE_ADMIN_OID"))
     required(env, "SPRING_DATABASE_ADMIN_NAME")
-    address = ipaddress.IPv4Address(required(env, "SPRING_DATABASE_BOOTSTRAP_IP"))
-    if address.is_unspecified:
-        raise RuntimeError("Bootstrap firewall IP must not be 0.0.0.0")
     bootstrap_sql(env)
     for package in ("psycopg", "certifi"):
         if importlib.util.find_spec(package) is None:
@@ -81,6 +141,7 @@ def prepare(settings, env):
     if env.get("SPRING_DATABASE_PASSWORD"):
         raise RuntimeError("Remove SPRING_DATABASE_PASSWORD before provisioning managed-identity authentication")
     subscription = required(env, "AZURE_SUBSCRIPTION_ID")
+    # Token acquisition checks CLI sign-in, not SQL permissions or database connectivity.
     try:
         command(
             "az", "account", "get-access-token", "--resource-type", "oss-rdbms",
@@ -97,6 +158,32 @@ def prepare(settings, env):
 def bootstrap(settings, env):
     if settings["engine"] != "postgresql" or settings["auth"] != "managedIdentity":
         raise RuntimeError("SQL identity bootstrap requires PostgreSQL managed identity")
+    subscription = required(env, "AZURE_SUBSCRIPTION_ID")
+    group = required(env, "AZURE_RESOURCE_GROUP")
+    server = required(env, "SPRING_DATABASE_SERVER_NAME")
+    try:
+        digest = bootstrap_database(settings, env)
+    finally:
+        # Bicep opens this dedicated rule on each provision. Remove only that rule, even if
+        # SQL/authentication fails; the separate ACA egress rules must remain untouched.
+        # https://learn.microsoft.com/rest/api/postgresql/firewall-rules/delete
+        try:
+            command(
+                "az", "postgres", "flexible-server", "firewall-rule", "delete",
+                "--subscription", subscription, "--resource-group", group, "--server-name", server,
+                "--name", "bootstrap-local-ip", "--yes",
+            )
+        except RuntimeError as error:
+            raise RuntimeError(
+                "Failed to remove temporary PostgreSQL firewall rule bootstrap-local-ip; "
+                "remove it manually from the provisioned server before retrying azd provision"
+            ) from error
+    # Do not record/report success until both SQL validation and firewall cleanup succeed.
+    set_value("SPRING_DATABASE_BOOTSTRAP_DIGEST", digest)
+    print("Non-admin SQL identity verified; reviewed schema/grants applied or unchanged bootstrap skipped.")
+
+
+def bootstrap_database(settings, env):
     import certifi
     import psycopg
     from psycopg import sql
@@ -130,6 +217,8 @@ def bootstrap(settings, env):
             **credentials,
         )
 
+    # Azure's principal functions run in postgres; the object ID pins the application identity.
+    # isAdmin=false creates a regular role, but does not constrain grants in the supplied SQL.
     with connect("postgres") as connection:
         mapping = connection.execute(
             "SELECT objectid, isadmin FROM pg_catalog.pgaadauth_list_principals(false) WHERE rolname = %s",
@@ -149,35 +238,24 @@ def bootstrap(settings, env):
         ).fetchone()
         if database_row is None:
             raise RuntimeError("Connected PostgreSQL database is missing from the system catalog")
-        digest = bootstrap_digest(host, database, database_row[0], principal, script)
+        role_row = connection.execute("SELECT oid FROM pg_roles WHERE rolname = %s", (ROLE,)).fetchone()
+        if role_row is None:
+            raise RuntimeError("Runtime SQL role is missing after identity mapping")
+        # Role creation commits separately. Its OID must invalidate cached grants even if
+        # a failed schema transaction is retried after the replacement mapping already exists.
+        digest = bootstrap_digest(host, database, database_row[0], role_row[0], principal, script)
+        # Cache only SQL execution; identity and effective privilege checks must run on every provision.
         if env.get("SPRING_DATABASE_BOOTSTRAP_DIGEST") != digest:
             connection.execute(sql.SQL("REVOKE ALL ON DATABASE {} FROM PUBLIC").format(
                 sql.Identifier(database)))
             connection.execute("REVOKE CREATE ON SCHEMA public FROM PUBLIC")
-            connection.execute(script, prepare=False)
-        flags = connection.execute(
-            "SELECT rolsuper, rolcreatedb, rolcreaterole FROM pg_roles WHERE rolname = %s", (ROLE,),
-        ).fetchone()
-        if flags != (False, False, False):
-            raise RuntimeError("Runtime SQL role must not have administrative privileges")
-        unsafe = connection.execute(
-            "SELECT pg_has_role(%s, 'azure_pg_admin', 'MEMBER'), "
-            "has_database_privilege(%s, current_database(), 'CREATE'), "
-            "has_database_privilege(%s, current_database(), 'TEMP'), "
-            "EXISTS (SELECT 1 FROM pg_namespace WHERE has_schema_privilege(%s, oid, 'CREATE') "
-            "AND nspname NOT LIKE 'pg_temp_%%' AND nspname NOT LIKE 'pg_toast_temp_%%'), "
-            "EXISTS (SELECT 1 FROM pg_class WHERE relowner = (SELECT oid FROM pg_roles WHERE rolname = %s)), "
-            "EXISTS (SELECT 1 FROM pg_class WHERE relowner <> (SELECT oid FROM pg_roles WHERE rolname = %s) "
-            "AND pg_has_role((SELECT oid FROM pg_roles WHERE rolname = %s), relowner, 'MEMBER'))",
-            (ROLE, ROLE, ROLE, ROLE, ROLE, ROLE, ROLE),
-        ).fetchone()
-        if any(unsafe):
-            raise RuntimeError("Runtime SQL role must not have admin, DDL, TEMP, or object ownership")
+            execute_bootstrap_sql(connection, script)
+        # A validation failure rolls back this schema/grant transaction without recording success.
+        validate_runtime_privileges(connection)
         connection.execute(
             sql.SQL("GRANT CONNECT ON DATABASE {} TO {}").format(
                 sql.Identifier(database), sql.Identifier(ROLE)))
-    set_value("SPRING_DATABASE_BOOTSTRAP_DIGEST", digest)
-    print("Non-admin SQL identity verified; reviewed schema/grants applied or unchanged bootstrap skipped.")
+    return digest
 
 
 if __name__ == "__main__":

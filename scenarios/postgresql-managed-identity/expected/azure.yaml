@@ -1,11 +1,11 @@
 hooks:
     postprovision:
         interactive: false
-        run: python .azd-spring/database.py bootstrap
+        run: python .azd-spring/bootstrap-postgresql-managed-identity.py bootstrap
         shell: pwsh
     preprovision:
         interactive: false
-        run: python .azd-spring/database.py prepare
+        run: python .azd-spring/bootstrap-postgresql-managed-identity.py prepare
         shell: pwsh
 infra:
     module: main

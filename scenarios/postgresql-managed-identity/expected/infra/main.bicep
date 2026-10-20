@@ -14,7 +14,6 @@ param databaseAuth string
 param databasePassword string = ''
 param administratorObjectId string = ''
 param administratorName string = ''
-param bootstrapIp string = ''
 param appImage string = 'mcr.microsoft.com/azuredocs/containerapps-helloworld:latest'
 param environmentBindings bool
 param jdbcOptions string = ''
@@ -22,6 +21,12 @@ param driver string = ''
 param embeddedUrl string = ''
 param embeddedUrlConfigured bool
 param embeddedDriver string = ''
+param foundryEnabled bool = false
+param foundryDeploymentName string = ''
+param foundryModelName string = 'gpt-5.4-nano'
+param foundryModelVersion string = '2026-03-17'
+param foundryModelSku string = 'GlobalStandard'
+param foundryModelCapacity int = 1
 
 resource group 'Microsoft.Resources/resourceGroups@2024-03-01' = {
   name: 'rg-${environmentName}'
@@ -40,7 +45,6 @@ module database 'database.bicep' = if (databaseEngine != 'none') {
     password: databasePassword
     administratorObjectId: administratorObjectId
     administratorName: administratorName
-    bootstrapIp: bootstrapIp
   }
 }
 
@@ -60,15 +64,28 @@ module bootstrap 'bootstrap.bicep' = {
   }
 }
 
+module foundry 'foundry.bicep' = if (foundryEnabled) {
+  name: 'foundry'
+  scope: group
+  params: {
+    location: location
+    deploymentName: foundryDeploymentName
+    modelName: foundryModelName
+    modelVersion: foundryModelVersion
+    modelSku: foundryModelSku
+    modelCapacity: foundryModelCapacity
+    outboundIps: bootstrap.outputs.outboundIps
+  }
+}
+
 module access 'access.bicep' = {
   name: 'access'
   scope: group
   params: {
     registryName: hosting.outputs.registryName
     principalId: bootstrap.outputs.principalId
-    postgresServerName: databaseEngine == 'postgresql' && databaseAuth == 'managedIdentity'
-      ? database!.outputs.serverName
-      : ''
+    postgresServerName: databaseEngine == 'postgresql' ? database!.outputs.serverName : ''
+    mysqlServerName: databaseEngine == 'mysql' ? database!.outputs.serverName : ''
     outboundIps: bootstrap.outputs.outboundIps
   }
 }
@@ -96,6 +113,9 @@ module application 'application.bicep' = {
     embeddedUrl: embeddedUrl
     embeddedUrlConfigured: embeddedUrlConfigured
     embeddedDriver: embeddedDriver
+    foundryEnabled: foundryEnabled
+    foundryAccountName: foundryEnabled ? foundry!.outputs.accountName : ''
+    foundryDeploymentName: foundryDeploymentName
   }
   dependsOn: [access]
 }
@@ -109,3 +129,5 @@ output SPRING_APPLICATION_ENDPOINT string = application.outputs.endpoint
 output SPRING_DATABASE_HOST string = databaseEngine != 'none' ? database!.outputs.host : ''
 output SPRING_DATABASE_NAME string = databaseName
 output SPRING_DATABASE_SERVER_NAME string = databaseEngine != 'none' ? database!.outputs.serverName : ''
+output SPRING_FOUNDRY_ACCOUNT_NAME string = foundryEnabled ? foundry!.outputs.accountName : ''
+output SPRING_FOUNDRY_DEPLOYMENT_NAME string = foundryDeploymentName

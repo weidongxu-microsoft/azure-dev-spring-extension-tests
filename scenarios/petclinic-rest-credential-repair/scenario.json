@@ -11,7 +11,9 @@
       "--profiles",
       "postgres,spring-data-jpa"
     ],
-    "environment": {},
+    "environment": {
+      "AZD_NON_INTERACTIVE": "false"
+    },
     "interaction": "interaction.json",
     "expectedExitCode": 0
   },

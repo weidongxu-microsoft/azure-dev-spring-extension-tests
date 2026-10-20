@@ -13,7 +13,7 @@ on:
       azure_dev_ref:
         description: Branch, tag, or commit containing the extension revision
         required: false
-        default: b08c6fa327114106bf0f25fa7824fa46149fec95
+        default: 125914566d235790bd5e7f71ed599f3c082fad2f
 
 permissions:
   contents: read
@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ${{ inputs.azure_dev_repository || 'weidongxu-microsoft/azure-dev' }}
-          ref: ${{ inputs.azure_dev_ref || 'b08c6fa327114106bf0f25fa7824fa46149fec95' }}
+          ref: ${{ inputs.azure_dev_ref || '125914566d235790bd5e7f71ed599f3c082fad2f' }}
           path: azure-dev
 
       - name: Set up Go
@@ -42,9 +42,11 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: "21"
           cache: maven
-          cache-dependency-path: scenarios/postgresql-managed-identity/app/pom.xml
+          cache-dependency-path: |
+            scenarios/postgresql-managed-identity/app/pom.xml
+            scenarios/foundry-chat/app/pom.xml
 
       - name: Set up Python
         uses: actions/setup-python@v5

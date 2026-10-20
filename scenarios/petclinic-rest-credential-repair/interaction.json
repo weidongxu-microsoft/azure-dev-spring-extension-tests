@@ -2,7 +2,7 @@
   "timeoutSeconds": 600,
   "steps": [
     {
-      "match": "Replace packaged datasource password defaults with runtime-only placeholders?",
+      "match": "Replace credential defaults with runtime-only placeholders?",
       "response": "y"
     }
   ]
