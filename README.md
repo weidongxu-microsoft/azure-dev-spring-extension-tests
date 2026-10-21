@@ -38,6 +38,12 @@ Run every scenario with:
 pwsh ./scripts/Invoke-AllScenarios.ps1
 ```
 
+Run every non-interactive scenario that generates and compares `azure.yaml`:
+
+```powershell
+pwsh ./scripts/Invoke-NonInteractiveGeneration.ps1
+```
+
 To deliberately accept reviewed output changes:
 
 ```powershell
