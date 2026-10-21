@@ -1,0 +1,86 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appImage": {
+      "value": "${SERVICE_CHAT_AZURE_APP_IMAGE_NAME=mcr.microsoft.com/azuredocs/containerapps-helloworld:latest}"
+    },
+    "authentication": {
+      "value": "password"
+    },
+    "databaseName": {
+      "value": ""
+    },
+    "driver": {
+      "value": ""
+    },
+    "embeddedDriver": {
+      "value": ""
+    },
+    "embeddedUrl": {
+      "value": ""
+    },
+    "embeddedUrlConfigured": {
+      "value": false
+    },
+    "engine": {
+      "value": "none"
+    },
+    "environmentBindings": {
+      "value": false
+    },
+    "environmentId": {
+      "value": "${SPRING_CONTAINER_APP_ENVIRONMENT_ID}"
+    },
+    "foundryAccountName": {
+      "value": "${SPRING_FOUNDRY_ACCOUNT_NAME=}"
+    },
+    "foundryAuthentication": {
+      "value": "apiKey"
+    },
+    "foundryChatDeploymentName": {
+      "value": "gpt-5.6-sol"
+    },
+    "foundryChatEnabled": {
+      "value": true
+    },
+    "foundryEmbeddingDeploymentName": {
+      "value": ""
+    },
+    "foundryEmbeddingEnabled": {
+      "value": false
+    },
+    "foundryEnabled": {
+      "value": true
+    },
+    "host": {
+      "value": "${SPRING_DATABASE_HOST=}"
+    },
+    "jdbcOptions": {
+      "value": ""
+    },
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "password": {
+      "value": "${SPRING_DATABASE_PASSWORD=}"
+    },
+    "port": {
+      "value": 8081
+    },
+    "profiles": {
+      "value": [
+        "default"
+      ]
+    },
+    "registryEndpoint": {
+      "value": "${AZURE_CONTAINER_REGISTRY_ENDPOINT}"
+    },
+    "serviceName": {
+      "value": "chat-azure-app"
+    },
+    "username": {
+      "value": "azdadmin"
+    }
+  }
+}

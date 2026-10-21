@@ -1,0 +1,15 @@
+infra:
+    module: main
+    path: infra
+    provider: bicep
+name: chat-azure
+services:
+    chat-azure-app:
+        docker:
+            context: .
+            path: .azd-spring/Dockerfile
+            platform: linux/amd64
+        host: containerapp
+        language: docker
+        module: application
+        project: .

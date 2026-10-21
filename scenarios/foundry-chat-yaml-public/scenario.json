@@ -1,0 +1,44 @@
+{
+  "name": "Public Spring AI Azure chat YAML application",
+  "application": {
+    "repository": "https://github.com/Mark7766/spring-ai-apps.git",
+    "commit": "b6110c2eee4656f7e52bc699bcb86c030d8dbbcc",
+    "subpath": "chat-azure",
+    "license": "MIT"
+  },
+  "init": {
+    "arguments": [
+      "--yes",
+      "--no-prompt"
+    ],
+    "environment": {},
+    "expectedExitCode": 0
+  },
+  "expected": {
+    "path": "expected",
+    "generatedPaths": [
+      ".azd-spring",
+      "infra",
+      "azure.yaml"
+    ]
+  },
+  "live": {
+    "costTier": "azure",
+    "location": "eastus2",
+    "model": {
+      "name": "gpt-5.6-sol",
+      "version": "2026-07-09",
+      "sku": "GlobalStandard"
+    },
+    "assertions": [
+      "application source remains unchanged",
+      "nested YAML Azure OpenAI properties produce one Foundry chat binding",
+      "the generated service target preserves application port 8081",
+      "Container App receives the API key only through a secret reference",
+      "generated files and local azd state do not disclose the API key",
+      "Foundry network access defaults to deny and allows only Container Apps outbound IPs",
+      "POST /api/chat returns HTTP 200 with a non-empty JSON message",
+      "all disposable Azure resources are deleted"
+    ]
+  }
+}

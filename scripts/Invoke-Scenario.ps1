@@ -71,28 +71,49 @@ try {
         Copy-DirectoryContents -Source $applicationSource -Destination $workingApplication
     }
     else {
-        New-Item -ItemType Directory -Path $workingApplication -Force | Out-Null
-        & git -C $workingApplication init --quiet
+        $checkoutRoot = Join-Path $temporaryRoot "source"
+        New-Item -ItemType Directory -Path $checkoutRoot -Force | Out-Null
+        & git -C $checkoutRoot init --quiet
         if ($LASTEXITCODE -ne 0) {
             throw "Failed to initialize application checkout"
         }
-        & git -C $workingApplication remote add origin $definition.application.repository
+        & git -C $checkoutRoot remote add origin $definition.application.repository
         if ($LASTEXITCODE -ne 0) {
             throw "Failed to configure application source: $($definition.application.repository)"
         }
-        & git -C $workingApplication fetch --quiet --depth 1 origin $definition.application.commit
+        & git -C $checkoutRoot fetch --quiet --depth 1 origin $definition.application.commit
         if ($LASTEXITCODE -ne 0) {
             throw "Failed to fetch application commit: $($definition.application.commit)"
         }
-        & git -C $workingApplication checkout --quiet --detach FETCH_HEAD
+        & git -C $checkoutRoot checkout --quiet --detach FETCH_HEAD
         if ($LASTEXITCODE -ne 0) {
             throw "Failed to check out fetched application commit"
         }
-        $actualCommit = (& git -C $workingApplication rev-parse HEAD).Trim()
+        $actualCommit = (& git -C $checkoutRoot rev-parse HEAD).Trim()
         if ($LASTEXITCODE -ne 0 -or $actualCommit -ne $definition.application.commit) {
             throw "Application checkout does not match pinned commit: $actualCommit"
         }
-        Remove-Item (Join-Path $workingApplication ".git") -Recurse -Force
+        Remove-Item (Join-Path $checkoutRoot ".git") -Recurse -Force
+
+        $checkoutSource = $checkoutRoot
+        if ($null -ne $definition.application.subpath) {
+            $subpath = [string] $definition.application.subpath
+            if ([string]::IsNullOrWhiteSpace($subpath) -or [IO.Path]::IsPathRooted($subpath)) {
+                throw "Application subpath must be a non-empty relative path: $subpath"
+            }
+            $checkoutSource = [IO.Path]::GetFullPath((Join-Path $checkoutRoot $subpath))
+            $checkoutPrefix = $checkoutRoot.TrimEnd(
+                [IO.Path]::DirectorySeparatorChar,
+                [IO.Path]::AltDirectorySeparatorChar
+            ) + [IO.Path]::DirectorySeparatorChar
+            if (-not $checkoutSource.StartsWith($checkoutPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+                throw "Application subpath escapes the pinned repository: $subpath"
+            }
+            if (-not (Test-Path $checkoutSource -PathType Container)) {
+                throw "Application subpath does not exist in the pinned repository: $subpath"
+            }
+        }
+        Copy-DirectoryContents -Source $checkoutSource -Destination $workingApplication
     }
     if ($null -ne $applicationOverlay) {
         Copy-DirectoryContents -Source $applicationOverlay -Destination $workingApplication
