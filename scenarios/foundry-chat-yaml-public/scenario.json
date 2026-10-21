@@ -4,6 +4,7 @@
     "repository": "https://github.com/Mark7766/spring-ai-apps.git",
     "commit": "b6110c2eee4656f7e52bc699bcb86c030d8dbbcc",
     "subpath": "chat-azure",
+    "overlay": "app-overlay",
     "license": "MIT"
   },
   "init": {
@@ -20,6 +21,9 @@
       ".azd-spring",
       "infra",
       "azure.yaml"
+    ],
+    "reviewedPaths": [
+      "src/main/resources/application.yml"
     ]
   },
   "live": {
