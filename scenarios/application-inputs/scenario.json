@@ -1,0 +1,40 @@
+{
+  "name": "Explicit application runtime inputs",
+  "application": {
+    "path": "app",
+    "origin": "app/README.md"
+  },
+  "init": {
+    "arguments": [
+      "--yes",
+      "--no-prompt",
+      "--application-input",
+      "APP_GREETING=value",
+      "--application-input",
+      "JWT_SECRET=secret"
+    ],
+    "environment": {},
+    "expectedExitCode": 0
+  },
+  "expected": {
+    "path": "expected",
+    "generatedPaths": [
+      ".azd-spring",
+      "infra",
+      "azure.yaml"
+    ]
+  },
+  "live": {
+    "costTier": "azure",
+    "assertions": [
+      "application source remains unchanged",
+      "application inputs do not provision additional Azure resources",
+      "APP_GREETING is injected as an ordinary Container Apps environment value",
+      "JWT_SECRET is injected only through a Container Apps secret reference",
+      "generated files, terminal output, and deployment history do not disclose JWT_SECRET",
+      "missing application input values fail before Azure resources are changed",
+      "GET /inputs returns the configured greeting and secretConfigured true without returning the secret",
+      "all disposable Azure resources are deleted"
+    ]
+  }
+}

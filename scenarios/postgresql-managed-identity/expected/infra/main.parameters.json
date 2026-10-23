@@ -11,6 +11,12 @@
     "appImage": {
       "value": "${SERVICE_SPRING_PETCLINIC_APP_IMAGE_NAME=mcr.microsoft.com/azuredocs/containerapps-helloworld:latest}"
     },
+    "applicationSecrets": {
+      "value": {}
+    },
+    "applicationValues": {
+      "value": {}
+    },
     "databaseAuth": {
       "value": "managedIdentity"
     },

@@ -1,0 +1,99 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "appImage": {
+      "value": "${SERVICE_APPLICATION_INPUTS_APP_IMAGE_NAME=mcr.microsoft.com/azuredocs/containerapps-helloworld:latest}"
+    },
+    "applicationSecrets": {
+      "value": {
+        "app-f64fcdc5eed5": {
+          "name": "JWT_SECRET",
+          "value": "${JWT_SECRET}"
+        }
+      }
+    },
+    "applicationValues": {
+      "value": {
+        "APP_GREETING": "${APP_GREETING}"
+      }
+    },
+    "authentication": {
+      "value": "password"
+    },
+    "databaseName": {
+      "value": ""
+    },
+    "driver": {
+      "value": ""
+    },
+    "embeddedDriver": {
+      "value": ""
+    },
+    "embeddedUrl": {
+      "value": ""
+    },
+    "embeddedUrlConfigured": {
+      "value": false
+    },
+    "engine": {
+      "value": "none"
+    },
+    "environmentBindings": {
+      "value": false
+    },
+    "environmentId": {
+      "value": "${SPRING_CONTAINER_APP_ENVIRONMENT_ID}"
+    },
+    "foundryAccountName": {
+      "value": "${SPRING_FOUNDRY_ACCOUNT_NAME=}"
+    },
+    "foundryAuthentication": {
+      "value": "apiKey"
+    },
+    "foundryChatDeploymentName": {
+      "value": ""
+    },
+    "foundryChatEnabled": {
+      "value": false
+    },
+    "foundryEmbeddingDeploymentName": {
+      "value": ""
+    },
+    "foundryEmbeddingEnabled": {
+      "value": false
+    },
+    "foundryEnabled": {
+      "value": false
+    },
+    "host": {
+      "value": "${SPRING_DATABASE_HOST=}"
+    },
+    "jdbcOptions": {
+      "value": ""
+    },
+    "location": {
+      "value": "${AZURE_LOCATION}"
+    },
+    "password": {
+      "value": "${SPRING_DATABASE_PASSWORD=}"
+    },
+    "port": {
+      "value": 8080
+    },
+    "profiles": {
+      "value": [
+        "default"
+      ]
+    },
+    "registryEndpoint": {
+      "value": "${AZURE_CONTAINER_REGISTRY_ENDPOINT}"
+    },
+    "serviceName": {
+      "value": "application-inputs-app"
+    },
+    "username": {
+      "value": "azdadmin"
+    }
+  }
+}

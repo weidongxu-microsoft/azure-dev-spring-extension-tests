@@ -11,6 +11,12 @@
     "appImage": {
       "value": "${SERVICE_FOUNDRY_CHAT_APP_IMAGE_NAME=mcr.microsoft.com/azuredocs/containerapps-helloworld:latest}"
     },
+    "applicationSecrets": {
+      "value": {}
+    },
+    "applicationValues": {
+      "value": {}
+    },
     "databaseAuth": {
       "value": "password"
     },

@@ -5,6 +5,12 @@
     "appImage": {
       "value": "${SERVICE_FOUNDRY_EMBEDDING_APP_IMAGE_NAME=mcr.microsoft.com/azuredocs/containerapps-helloworld:latest}"
     },
+    "applicationSecrets": {
+      "value": {}
+    },
+    "applicationValues": {
+      "value": {}
+    },
     "authentication": {
       "value": "password"
     },
